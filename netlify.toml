@@ -1,0 +1,24 @@
+# netlify.toml — Netlify deployment configuration for ShopKart frontend
+#
+# Frontend (React/Vite) is deployed to Netlify.
+# Backend (Express + PostgreSQL) is deployed separately to Render.
+# The API URL is injected via VITE_API_URL environment variable on Netlify.
+
+[build]
+  # Command to build the React/Vite app
+  command = "npm run build"
+  # Directory that contains the built output
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+# SPA redirect — all routes go to index.html so React Router handles them
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# API proxy — forwards /api/* to the Render backend (avoids CORS issues)
+# Set VITE_API_URL on Netlify dashboard to your Render backend URL
+# e.g. https://shopkart-backend.onrender.com

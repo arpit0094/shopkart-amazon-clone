@@ -1,0 +1,175 @@
+/* Amazon Clone E-Commerce - Design System */
+/* All colors defined as HSL tokens for consistent theming */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Amazon-inspired color palette */
+    --background: 0 0% 93%;
+    --foreground: 210 11% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 210 11% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 11% 15%;
+
+    /* Amazon dark navy */
+    --primary: 210 29% 10%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Amazon light gray */
+    --secondary: 40 7% 95%;
+    --secondary-foreground: 210 11% 15%;
+
+    --muted: 40 7% 95%;
+    --muted-foreground: 210 5% 45%;
+
+    /* Amazon orange accent */
+    --accent: 36 100% 50%;
+    --accent-foreground: 210 11% 15%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 40 7% 85%;
+    --input: 40 7% 85%;
+    --ring: 36 100% 50%;
+
+    --radius: 0.5rem;
+
+    /* Custom Amazon tokens */
+    --amazon-navy: 210 29% 10%;
+    --amazon-navy-light: 210 20% 20%;
+    --amazon-orange: 36 100% 50%;
+    --amazon-orange-hover: 33 100% 45%;
+    --amazon-yellow: 48 100% 50%;
+    --amazon-yellow-hover: 45 100% 45%;
+    --amazon-teal: 180 50% 30%;
+    --amazon-link: 200 70% 35%;
+    --amazon-star: 42 100% 50%;
+    --amazon-deal: 0 80% 45%;
+    --amazon-header: 210 29% 10%;
+    --amazon-header-bottom: 195 30% 22%;
+    --amazon-search-btn: 36 80% 55%;
+    --amazon-prime: 227 70% 40%;
+
+    /* Shadows */
+    --shadow-card: 0 2px 5px 0 rgba(0,0,0,0.05);
+    --shadow-hover: 0 4px 12px 0 rgba(0,0,0,0.12);
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', 'Arial', 'Helvetica', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Amazon-style focus ring */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-accent ring-offset-1;
+  }
+}
+
+@layer components {
+  /* Amazon-style button variants */
+  .btn-amazon-primary {
+    @apply bg-amazon-yellow hover:bg-amazon-yellow-hover text-foreground font-medium rounded-lg px-4 py-2 transition-colors border border-amazon-orange/30;
+  }
+
+  .btn-amazon-orange {
+    @apply bg-amazon-orange hover:bg-amazon-orange-hover text-primary-foreground font-medium rounded-lg px-4 py-2 transition-colors;
+  }
+
+  .btn-amazon-outline {
+    @apply bg-card hover:bg-secondary text-foreground font-medium rounded-lg px-4 py-2 transition-colors border border-border;
+  }
+
+  /* Amazon product card */
+  .product-card {
+    @apply bg-card rounded-md p-4 transition-shadow duration-200 hover:shadow-lg cursor-pointer;
+    box-shadow: var(--shadow-card);
+  }
+
+  .product-card:hover {
+    box-shadow: var(--shadow-hover);
+  }
+
+  /* Star rating color */
+  .star-filled {
+    color: hsl(var(--amazon-star));
+  }
+
+  /* Deal / discount badge */
+  .deal-badge {
+    @apply bg-amazon-deal text-primary-foreground text-xs font-bold px-2 py-0.5 rounded-sm;
+  }
+
+  /* Amazon link styling */
+  .amazon-link {
+    @apply text-amazon-link hover:text-amazon-orange hover:underline cursor-pointer transition-colors;
+  }
+
+  /* Amazon Prime badge */
+  .prime-badge {
+    @apply text-[hsl(var(--amazon-prime))] font-bold italic text-xs border border-[hsl(var(--amazon-prime))] rounded px-1.5 py-0.5;
+    letter-spacing: 0.05em;
+  }
+
+  /* Input base style */
+  .input-amazon {
+    @apply w-full border border-border rounded px-3 py-2 text-sm bg-card focus:border-amazon-orange outline-none transition-colors;
+  }
+
+  /* Order status badge */
+  .status-badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold;
+  }
+}
+
+@layer utilities {
+  /* Hide scrollbar while keeping scroll functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Page fade-in animation */
+  .animate-page-in {
+    animation: page-in 0.25s ease-out;
+  }
+
+  @keyframes page-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
