@@ -1,10 +1,11 @@
 // Signup Page - New user registration form
-// Simulated signup — creates a user in AuthContext
+// Simulated signup — creates a user in AuthContext and persists to localStorage
 
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Check } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { toast } from "@/hooks/use-toast";
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -52,8 +53,12 @@ const Signup = () => {
     setError("");
     const ok = await signup(name, email, password);
     setLoading(false);
-    if (ok) navigate("/");
-    else setError("Registration failed. Please try again.");
+    if (ok) {
+      toast({ title: "Account Created!", description: `Welcome to ShopKart, ${name}!` });
+      navigate("/");
+    } else {
+      setError("Registration failed. Please try again.");
+    }
   };
 
   return (

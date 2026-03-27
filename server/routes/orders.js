@@ -116,17 +116,27 @@ router.post("/", async (req, res) => {
     // ── Fetch complete order for response + email ─────────────
     const fullOrder = await getFullOrder(orderId, pool);
 
-    // Send confirmation email asynchronously — don't block the HTTP response
-    // EMAIL LOCATION: server/services/emailService.js
-    // CONFIG:         server/.env → MAIL_PROVIDER, MAIL_USER, MAIL_PASS
-    sendOrderConfirmationEmail(fullOrder, userEmail || "customer@shopkart.in").catch(
-      (err) => console.error("Email send error:", err.message)
-    );
+    // ── Send confirmation email and capture preview URL ──────
+    // EMAIL LOCATION:  server/services/emailService.js
+    // EMAIL CONFIG:    server/.env → MAIL_PROVIDER, MAIL_USER, MAIL_PASS
+    // In Ethereal mode: previewUrl is returned in the API response
+    // In Gmail mode:    email goes to real inbox, previewUrl is null
+    let emailPreviewUrl = null;
+    try {
+      emailPreviewUrl = await sendOrderConfirmationEmail(
+        fullOrder,
+        userEmail || "customer@shopkart.in"
+      );
+    } catch (emailErr) {
+      console.error("Email send error (non-fatal):", emailErr.message);
+    }
 
     res.status(201).json({
       success: true,
       order: fullOrder,
       message: `Order ${orderId} placed successfully!`,
+      // Ethereal preview URL — frontend can show this as a link for demo purposes
+      emailPreviewUrl,
     });
   } catch (err) {
     console.error("Order creation error:", err);

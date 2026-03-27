@@ -65,7 +65,7 @@ export interface PlaceOrderPayload {
 }
 
 export const placeOrderAPI = (payload: PlaceOrderPayload) =>
-  apiFetch<{ success: boolean; order: any; message: string }>("/orders", {
+  apiFetch<{ success: boolean; order: any; message: string; emailPreviewUrl: string | null }>("/orders", {
     method: "POST",
     body: JSON.stringify(payload),
   });

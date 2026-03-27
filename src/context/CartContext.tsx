@@ -19,7 +19,7 @@ interface CartContextType {
   getCartSubtotal: () => number;
   getCartItemCount: () => number;
   placeOrder: (address: ShippingAddress) => Order;
-  placeOrderAsync: (address: ShippingAddress, userEmail?: string, userId?: string) => Promise<Order>;
+  placeOrderAsync: (address: ShippingAddress, userEmail?: string, userId?: string) => Promise<Order & { emailPreviewUrl?: string | null }>;
 
   addToWishlist: (product: Product) => void;
   removeFromWishlist: (productId: string) => void;
@@ -163,14 +163,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     address: ShippingAddress,
     userEmail = "arpit@shopkart.in",
     userId = "user-001"
-  ): Promise<Order> => {
+  ): Promise<Order & { emailPreviewUrl?: string | null }> => {
     const subtotal = getCartSubtotal();
     const shipping = subtotal > 499 ? 0 : 49;
     const tax = subtotal * 0.18;
     const total = subtotal + shipping + tax;
 
     try {
-      // Try the real backend
+      // Try the real backend (Express + PostgreSQL)
       const result = await placeOrderAPI({
         userId,
         userEmail,
@@ -183,7 +183,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       });
 
       // Map backend response to frontend Order type
-      const order: Order = {
+      const order: Order & { emailPreviewUrl?: string | null } = {
         id: result.order.id,
         items: cartItems,
         shippingAddress: address,
@@ -193,6 +193,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         total,
         placedAt: result.order.placed_at || new Date().toISOString(),
         status: "Confirmed",
+        // Ethereal preview URL from server — shown on confirmation page
+        emailPreviewUrl: result.emailPreviewUrl ?? null,
       };
 
       setOrders((prev) => [order, ...prev]);
