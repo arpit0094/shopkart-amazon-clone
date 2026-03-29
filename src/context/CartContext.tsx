@@ -183,7 +183,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       });
 
       // Map backend response to frontend Order type
-      const order: Order & { emailPreviewUrl?: string | null } = {
+      const order: Order & { emailPreviewUrl?: string | null; userEmail?: string } = {
         id: result.order.id,
         items: cartItems,
         shippingAddress: address,
@@ -195,6 +195,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         status: "Confirmed",
         // Ethereal preview URL from server — shown on confirmation page
         emailPreviewUrl: result.emailPreviewUrl ?? null,
+        // Store the email so confirmation page can display it
+        userEmail,
       };
 
       setOrders((prev) => [order, ...prev]);

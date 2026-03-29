@@ -72,7 +72,7 @@ const Footer = () => {
         <p className="text-xs text-primary-foreground/50 text-center">
           © 2026 ShopKart, Inc. or its affiliates. All rights reserved.
           <br />
-          Amazon Clone — SDE Intern Assignment
+          Built by Arpit Sharma
         </p>
       </div>
     </footer>

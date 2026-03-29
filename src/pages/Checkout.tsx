@@ -29,7 +29,10 @@ const Checkout = () => {
     phone: "",
   });
 
-  const [errors, setErrors] = useState<Partial<Record<keyof ShippingAddress, string>>>({});
+  // Collect email separately — used for order confirmation email
+  const [customerEmail, setCustomerEmail] = useState<string>(user?.email ?? "");
+
+  const [errors, setErrors] = useState<Partial<Record<keyof ShippingAddress | "email", string>>>({}); 
   const [placing, setPlacing] = useState(false);
 
   const handleChange = (field: keyof ShippingAddress, value: string) => {
@@ -38,7 +41,10 @@ const Checkout = () => {
   };
 
   const validate = (): boolean => {
-    const newErrors: Partial<Record<keyof ShippingAddress, string>> = {};
+    const newErrors: Partial<Record<keyof ShippingAddress | "email", string>> = {};
+    if (!customerEmail.trim()) newErrors.email = "Email address is required";
+    else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(customerEmail))
+      newErrors.email = "Enter a valid email address";
     if (!address.fullName.trim()) newErrors.fullName = "Full name is required";
     if (!address.addressLine1.trim()) newErrors.addressLine1 = "Address is required";
     if (!address.city.trim()) newErrors.city = "City is required";
@@ -58,7 +64,7 @@ const Checkout = () => {
       // placeOrderAsync tries the backend API first (sends email), falls back to localStorage
       const order = await placeOrderAsync(
         address,
-        user?.email ?? "customer@shopkart.in",
+        customerEmail || user?.email || "customer@shopkart.in",
         user?.id ?? "guest-user"
       );
       navigate(`/order-confirmation/${order.id}`);
@@ -103,6 +109,29 @@ const Checkout = () => {
               </h2>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="sm:col-span-2">
+                  <label className="block text-sm font-medium mb-1">
+                    Email Address *
+                  </label>
+                  <input
+                    type="email"
+                    value={customerEmail}
+                    onChange={(e) => {
+                      setCustomerEmail(e.target.value);
+                      if ((errors as any).email) setErrors((prev) => ({ ...prev, email: undefined }));
+                    }}
+                    className="input-amazon"
+                    placeholder="you@example.com"
+                    autoComplete="email"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Order confirmation email will be sent here
+                  </p>
+                  {(errors as any).email && (
+                    <p className="text-amazon-deal text-xs mt-1">{(errors as any).email}</p>
+                  )}
+                </div>
+
                 <div className="sm:col-span-2">
                   <label className="block text-sm font-medium mb-1">
                     Full Name *

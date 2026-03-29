@@ -60,12 +60,18 @@ async function getTransporter() {
     // ── Gmail SMTP ──────────────────────────────────────────────
     // Uses your Gmail account with an "App Password" (not your normal password).
     // See server/.env for MAIL_USER and MAIL_PASS configuration.
+    //
+    // NOTE: Google displays App Passwords with spaces (e.g. "abcd efgh ijkl mnop")
+    // but the actual credential used for auth has NO spaces. We strip them here.
+
+    const rawPass = process.env.MAIL_PASS || "";
+    const cleanPass = rawPass.replace(/\s/g, ""); // remove all spaces / formatting
 
     transporter = nodemailer.createTransport({
       service: "gmail", // nodemailer knows Gmail's SMTP settings
       auth: {
         user: process.env.MAIL_USER, // e.g. arpitsharma@gmail.com
-        pass: process.env.MAIL_PASS, // 16-char App Password from Google
+        pass: cleanPass,             // 16-char App Password (spaces removed)
       },
     });
 
@@ -78,10 +84,24 @@ async function getTransporter() {
       console.error("\n❌ Gmail SMTP failed:", err.message);
       console.error(
         "   Check MAIL_USER and MAIL_PASS in server/.env\n" +
-        "   Make sure you're using an App Password, not your normal password.\n" +
-        "   Guide: https://support.google.com/accounts/answer/185833"
+        "   Make sure you're using an App Password (not your normal password).\n" +
+        "   Step 1: Go to https://myaccount.google.com/security\n" +
+        "   Step 2: Enable 2-Step Verification\n" +
+        "   Step 3: Search 'App passwords' → create one for Mail\n" +
+        "   Step 4: Paste the 16-char password in MAIL_PASS (spaces OK)\n" +
+        "   Guide:  https://support.google.com/accounts/answer/185833\n" +
+        "   ⚠️  Falling back to Ethereal for this session."
       );
-      // Fall through — emails will fail but server keeps running
+      // Credential is bad — fall back to Ethereal so the server stays running
+      const testAccount = await nodemailer.createTestAccount();
+      transporter = nodemailer.createTransport({
+        host: "smtp.ethereal.email",
+        port: 587,
+        secure: false,
+        auth: { user: testAccount.user, pass: testAccount.pass },
+      });
+      console.log(`\n📧 Ethereal fallback active. User: ${testAccount.user}`);
+      console.log("   After placing an order, a preview URL will appear here.\n");
     }
   } else {
     // ── Ethereal (default/testing) ──────────────────────────────
@@ -236,7 +256,7 @@ function buildOrderEmailHTML(order) {
   <!-- Footer -->
   <div class="footer">
     <p>Questions? Visit <a href="http://localhost:8080/orders">Your Orders</a></p>
-    <p>© 2026 ShopKart, Inc. — SDE Intern Assignment</p>
+    <p>© 2026 ShopKart, Inc. — Built by Arpit Sharma</p>
   </div>
 
 </div>
