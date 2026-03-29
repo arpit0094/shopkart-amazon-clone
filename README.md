@@ -338,8 +338,9 @@ npx netlify deploy --prod --dir=dist
 
 ## 👨‍💻 Author
 
-**Arpit Sharma** — SDE Intern Assignment Submission
+**Arpit Sharma** 
 
 ---
 
 *Built with ❤️ as an Amazon-inspired experience*
+Arpit Sharma
